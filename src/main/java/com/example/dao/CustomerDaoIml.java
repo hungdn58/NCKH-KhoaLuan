@@ -1,6 +1,7 @@
 package com.example.dao;
 
 import com.example.model.Customer;
+import com.example.model.Suggest;
 import org.springframework.stereotype.Repository;
 import spellcheck.SpellChecker;
 import spellcheck.SpellcheckUI;
@@ -19,7 +20,7 @@ import java.util.logging.Logger;
 @Repository
 public class CustomerDaoIml implements CustomerDao {
 
-    public SpellChecker spellChecker;
+    private SpellChecker spellChecker;
 
     @PersistenceContext
     EntityManager entityManager;
@@ -53,7 +54,7 @@ public class CustomerDaoIml implements CustomerDao {
     @Override
     public String positionMistake(String content) {
         try {
-            spellChecker = new SpellChecker("/home/hoangnhat/Desktop/ngramdict/");
+            spellChecker = new SpellChecker("/home/hungdn58/Desktop/ngramdict/");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -91,11 +92,148 @@ public class CustomerDaoIml implements CustomerDao {
     }
 
     @Override
-    public ArrayList<String> spellingCheck(String content) {
-        ArrayList<String> result = new ArrayList<>();
+    public String findMistakePosition(String content) {
+        // TODO add your handling code here:
+        //String inputText = this.jTextArea1.getText();
+        try {
+            if (spellChecker == null) {
+                spellChecker = new SpellChecker("/home/hungdn58/Desktop/ngramdict/");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String output = "";
+        double runningTime = 0.0;
+        if (content.length() > 0) {
+            //System.out.println(inputText);
+            String[] lines = content.split("\n");
+//            System.out.println("lines length " + lines.length);
+            String result = "";
+            for (int i = 0; i < lines.length; i++) {
+//                System.out.println(lines[0]);
+                try {
+                    long start = System.currentTimeMillis();
+                    //lines[i] = res.restoration(lines[i]);
+//                    if(this.jRadioButton2.isSelected()){
+//                        lines[i] = res.restoration(lines[i]);
+//                    }
+                    result += spellChecker.CheckSentence(lines[i]) + "\n";
+                    long end = System.currentTimeMillis();
+                    runningTime = (end - start)*1.0/1000;
+                } catch (Exception ex) {
+                    Logger.getLogger(SpellcheckUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            output = result + " - " + runningTime;
+            //System.out.println(result);
+        } else {
+            output = "empty input";
+        }
+//        String[] split = inputText.split("\n");
+//        for(int i = 0;i < split.length;i++)
+//            System.out.println(split[i]);
+//        System.out.println(inputText);
+        return output;
+    }
+
+    @Override
+    public ArrayList<Suggest> checkParagraph(String content) {
+        ArrayList<Suggest> result = new ArrayList<>();
+        try {
+            if (spellChecker == null) {
+                spellChecker = new SpellChecker("/home/hungdn58/Desktop/ngramdict/");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (content.length() > 0) {
+            //System.out.println(inputText);
+            String[] lines = content.split("\n");
+//            System.out.println("lines length " + lines.length);
+//            String result = "";
+
+            for (int i = 0; i < lines.length; i++) {
+//                System.out.println(lines[0]);
+                try {
+                    long start = System.currentTimeMillis();
+                    //lines[i] = res.restoration(lines[i]);
+//                    if(this.jRadioButton2.isSelected()){
+//                        lines[i] = res.restoration(lines[i]);
+//                    }
+                    result = spellChecker.processParagraph(lines[i]);
+                    long end = System.currentTimeMillis();
+//                    runningTime = (end - start)*1.0/1000;
+                } catch (Exception ex) {
+                    Logger.getLogger(SpellcheckUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+//            output = result;
+            //System.out.println(result);
+        } else {
+//            output = "empty input";
+        }
+
+        return result;
+    }
+
+    @Override
+    public ArrayList typingCheck(String content) {
+        System.out.print(content);
+        ArrayList result = new ArrayList<>();
 
         try {
-            spellChecker = new SpellChecker("/home/hoangnhat/Desktop/ngramdict/");
+            if (spellChecker == null) {
+                spellChecker = new SpellChecker("/home/hungdn58/Desktop/ngramdict/");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // TODO add your handling code here:
+        //String inputText = this.jTextArea1.getText();
+        String output = "";
+        double runningTime = 0.0;
+        if (content.length() > 0) {
+            //System.out.println(inputText);
+            String[] lines = content.split("\n");
+//            System.out.println("lines length " + lines.length);
+//            String result = "";
+
+            for (int i = 0; i < lines.length; i++) {
+//                System.out.println(lines[0]);
+                try {
+                    long start = System.currentTimeMillis();
+                    //lines[i] = res.restoration(lines[i]);
+//                    if(this.jRadioButton2.isSelected()){
+//                        lines[i] = res.restoration(lines[i]);
+//                    }
+                    result = spellChecker.processLine(lines[i]);
+                    long end = System.currentTimeMillis();
+//                    runningTime = (end - start)*1.0/1000;
+                } catch (Exception ex) {
+                    Logger.getLogger(SpellcheckUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+//            output = result;
+            //System.out.println(result);
+        } else {
+//            output = "empty input";
+        }
+
+        return result;
+    }
+
+
+    @Override
+    public ArrayList<String> spellingCheck(String content) {
+        System.out.print(content);
+        ArrayList result = new ArrayList<>();
+
+        try {
+            if (spellChecker == null) {
+                spellChecker = new SpellChecker("/home/hungdn58/Desktop/ngramdict/");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

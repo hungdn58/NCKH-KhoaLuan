@@ -2,6 +2,8 @@ package com.example.controller;
 
 import com.example.dao.CustomerDao;
 import com.example.model.Customer;
+import com.example.model.Mistake;
+import com.example.model.Suggest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -51,6 +55,25 @@ public class DemoController {
         return result;
     }
 
+    @CrossOrigin
+    @RequestMapping(value = "/check", method = RequestMethod.POST)
+    public String postHandler(@RequestParam String url) {
+        String text = "";
+
+        try {
+            //TODO return proper representation object
+
+            Document doc = Jsoup.connect(url).get();
+            text = doc.body().text();
+
+        } catch (IOException ex) {
+
+        }
+        return customerDao.findMistakePosition(text);
+    }
+
+
+
     @RequestMapping("/findbyid")
     public String findById(@RequestParam("id") long id) {
         String result = "";
@@ -80,6 +103,36 @@ public class DemoController {
 
         }
         return customerDao.spellingCheck(text);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/typing", method = RequestMethod.POST)
+    public ArrayList<String> findTypingSpellingMistake(@RequestParam String content) {
+        return customerDao.typingCheck(content);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/spelling", method = RequestMethod.POST)
+    public @ResponseBody
+    Mistake findParagrahpSpellingMistake(@RequestParam String content) {
+        Mistake mistake = new Mistake();
+        ArrayList<Suggest> result = customerDao.checkParagraph(content);
+        if (result == null) {
+            mistake.setMessage("failed");
+            mistake.setResult("Sentence must have at least five words");
+        } else {
+            if (result.size() > 0) {
+                mistake.setMessage("success");
+                mistake.setResult("found errors");
+                mistake.setMistakes(result);
+            } else {
+                mistake.setMessage("success");
+                mistake.setResult("not found errors");
+                mistake.setMistakes(result);
+            }
+        }
+
+        return mistake;
     }
 
     @RequestMapping(value = "/position", method = RequestMethod.POST)

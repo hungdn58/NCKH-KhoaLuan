@@ -8,6 +8,8 @@ import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import com.example.model.Suggest;
 import spellcheck.Check.*;
 
 ;
@@ -1411,6 +1413,207 @@ public class SpellChecker {
         return luu;
     }
 
+    public ArrayList CheckSentence(String sentence) throws Exception {
+        String resultSentence = "";
+        ArrayList<SpellingError> listcheck = new ArrayList();
+        ArrayList<String> resultCheck = new ArrayList();
+        int count, error_count;
+        count = 0;
+        error_count = 0;
+//        System.out.println(process("mới", "mua", "dung", "ma", "sao"));
+//        System.out.println(process("mua", "dùng", "ma", "sao", ""));
+
+        String[] words = sentence.split(" ");
+        if (words.length < 5) {
+            //return sentence;
+            return null;
+        }
+
+        StringBuilder tmp1_1, tmp1_2, tmp2_1, tmp2_2, tmp3_1, tmp3_2, tmp4_1, tmp4_2;
+        tmp1_1 = new StringBuilder("");
+        tmp1_2 = new StringBuilder("");
+        tmp2_1 = new StringBuilder("");
+        tmp2_2 = new StringBuilder("");
+        tmp3_1 = new StringBuilder("");
+        tmp3_2 = new StringBuilder("");
+        tmp4_1 = new StringBuilder("");
+        tmp4_2 = new StringBuilder("");
+        String tmp_str1, tmp_str2, tmp_str3, tmp_str4, tmp_str5 = null;
+        tmp_str1 = "";
+        tmp_str2 = "";
+        tmp_str3 = "";
+        tmp_str4 = "";
+//        tmp_str5 = "";
+        //split punctuation from the word
+        StringBuilder first = new StringBuilder(words[0]);
+        tmp_str1 = first.toString();
+        remove_symbol(first, tmp1_1, tmp1_2);
+        StringBuilder second = new StringBuilder(words[1]);
+        tmp_str2 = second.toString();
+        remove_symbol(second, tmp2_1, tmp2_2);
+        symbolMark1 = tmp1_2.length() > 0 || (tmp2_1.length() > 0 && first.charAt(0) != '@');
+        StringBuilder third = new StringBuilder(words[2]);
+        tmp_str3 = third.toString();
+        char c3 = third.charAt(0);
+        remove_symbol(third, tmp3_1, tmp3_2);
+        symbolMark2 = (tmp2_2.length() > 0 || (tmp3_1.length() > 0 && c3 != '@'));
+        StringBuilder fourth = new StringBuilder(words[3]);
+        tmp_str4 = fourth.toString();
+        char c4 = fourth.charAt(0);
+        remove_symbol(fourth, tmp4_1, tmp4_2);
+        symbolMark3 = (tmp3_2.length() > 0 || (tmp4_1.length() > 0 && c4 != '@'));
+        //check the first two words
+        String result = process("", "", first.toString(), second.toString(), third.toString());
+        if (first.toString().toLowerCase().compareTo(result.toLowerCase()) != 0) {
+            String error = first.toString();
+            first.replace(0, first.length(), result);
+            //resultSentence += "" + tmp1_1 + error + "[" + first + "]" + tmp1_2 + " ";
+            SpellingError a= new SpellingError(0,0,""+first);
+            listcheck.add(a);
+            error_count++;
+            count++;
+            resultCheck.add("[" + error + ", " + first + ", " + count + "] " );
+
+        } else {
+            //resultSentence += tmp_str1 + " ";
+//            resultCheck.add(first + " ");
+            count++;
+        }
+        result = process("", first.toString(), second.toString(), third.toString(), fourth.toString());
+        if (second.toString().toLowerCase().compareTo(result.toLowerCase()) != 0) {
+            String error = second.toString();
+            second.replace(0, second.length(), result);
+            //resultSentence += "" + tmp2_1 + error + "[" + second + "]" + tmp2_2 + " ";
+            SpellingError a= new SpellingError(1,1,""+second);
+            listcheck.add(a);
+            count++;
+            resultCheck.add("[" + error + ", " + second + ", " + count + "] " );
+            error_count++;
+        } else {
+            //resultSentence += tmp_str2 + " ";
+//            resultCheck.add(second + " ");
+            count++;
+        }
+        StringBuilder fifth = null;
+        StringBuilder tmp5_1 = null, tmp5_2 = null;
+        for (int i = 4; i < words.length; i++) {
+            fifth = new StringBuilder(words[i]);
+            tmp5_1 = new StringBuilder("");
+            tmp5_2 = new StringBuilder("");
+//                System.out.println("'"+fifth+"'");
+            char c5;
+            if (fifth.length() != 0) {
+                c5 = fifth.charAt(0);
+            } else {
+                c5 = ' ';
+            }
+            tmp_str5 = fifth.toString();
+
+//            System.out.println(first.toString() + " " + second.toString() + " " + third.toString() + " " + fourth.toString() + " " + fifth.toString());
+            remove_symbol(fifth, tmp5_1, tmp5_2);
+            symbolMark4 = (tmp4_2.length() > 0 || (tmp5_1.length() > 0 && c5 != '@'));
+            result = process(first.toString(), second.toString(), third.toString(), fourth.toString(), fifth.toString());
+//                System.out.println(tmp_str3);
+            if (third.toString().toLowerCase().compareTo(result.toLowerCase()) != 0 && c3 == '@') {
+//                    System.out.println(first.toString() + " " + second.toString() + " " + third.toString() + " " + fourth.toString() + " " + fifth.toString() + " : " + result);
+//                    Thread.sleep(50000);
+                System.out.println(third.toString() + " : " + result);
+            }
+            if (third.toString().toLowerCase().compareTo(result.toLowerCase()) != 0) {
+                //if (c3 == '@') {
+                error_count++;
+                // }
+                String error = third.toString();
+                third.replace(0, third.length(), result);
+                //resultSentence += "" + tmp3_1 + error + "[" + third + "]" + tmp3_2 + " ";
+                SpellingError a= new SpellingError(i-2,i-2,""+third);
+                listcheck.add(a);
+                count++;
+                resultCheck.add("[" + error + ", " + third + ", " + count + "] " );
+            } else {
+                //resultSentence += tmp_str3 + " ";
+//                resultCheck.add(third + " ");
+                count++;
+            }
+
+            first = second;
+            second = third;
+            third = fourth;
+            fourth = fifth;
+            tmp_str1 = tmp_str2;
+            tmp_str2 = tmp_str3;
+            tmp_str3 = tmp_str4;
+            tmp_str4 = tmp_str5;
+            tmp1_1 = tmp2_1;
+            tmp2_1 = tmp3_1;
+            tmp3_1 = tmp4_1;
+            tmp4_1 = tmp5_1;
+            tmp1_2 = tmp2_2;
+            tmp2_2 = tmp3_2;
+            tmp3_2 = tmp4_2;
+            tmp4_2 = tmp5_2;
+//                System.out.println("assign tmp4_2 to " + tmp5_2 + "\n");
+            symbolMark1 = symbolMark2;
+            symbolMark2 = symbolMark3;
+            symbolMark3 = symbolMark4;
+            c3 = c4;
+            c4 = c5;
+            count++;
+        }
+//        check last two words
+//        System.out.println("process word " + third);
+        result = process(first.toString(), second.toString(), third.toString(), fourth.toString(), "");
+        if (third.toString().toLowerCase().compareTo(result.toLowerCase()) != 0) {
+            String error = third.toString();
+            third.replace(0, third.length(), result);
+            //resultSentence += "" + tmp3_1 + error + "[" + third + "]" + tmp3_2 + " ";
+            SpellingError a= new SpellingError(words.length-2,words.length-2,""+third);
+            listcheck.add(a);
+            count++;
+            resultCheck.add("[" + error + ", " + third + ", " + count + "] " );
+            error_count++;
+        } else {
+            //resultSentence += tmp_str3 + " ";
+//            resultCheck.add(third + " ");
+            count++;
+        }
+//        System.out.println("process word " + fourth);
+        result = process(second.toString(), third.toString(), fourth.toString(), "", "");
+        if (fourth.toString().toLowerCase().compareTo(result.toLowerCase()) != 0) {
+            String error = fourth.toString();
+            fourth.replace(0, fourth.length(), result);
+            //resultSentence += "" + tmp4_1 + error + "[" + fourth + "]" + tmp4_2 + " ";
+            SpellingError a= new SpellingError(words.length-1,words.length-1,""+fourth);
+            listcheck.add(a);
+            count++;
+            resultCheck.add("[" + error + ", " + fourth + ", " + count + "] " );
+            error_count++;
+
+        } else {
+            //resultSentence += tmp_str4 + " ";
+//            resultCheck.add(fourth + " ");
+            count++;
+        }
+//        System.out.println("count: " + count);
+        //System.out.println("error_count: " + error_count);
+       /* ArrayList<Check> list = new ArrayList<>();
+        String ou = "";
+        String[] token = resultSentence.split(" ");
+        for (int i = 0; i < token.length; i++) {
+            if (token[i].indexOf("[") > -1) {
+                Check a = new Check(i, token[i].substring(token[i].indexOf("[")+1, token[i].length()-1));
+//                ou +=token[i]+",";
+                list.add(a);
+            }
+//sonnv.ict@gmail.com
+        }
+        ou = list.toString();
+
+        return ou;*/
+        //return resultSentence.trim();
+        return resultCheck;
+    }
+
     String process_v2(String lastword2, String lastword1, String curword, String nextword1, String nextword2) {
         //int index2,index1,index;
         String luu = curword + "(";
@@ -2041,6 +2244,7 @@ public class SpellChecker {
 
         ArrayList<SpellingError> listcheck = new ArrayList();
         ArrayList<String> resultCheck = new ArrayList();
+        ArrayList<String> resultCheckPosition = new ArrayList();
 
         int count, error_count;
         count = 0;
@@ -2095,7 +2299,7 @@ public class SpellChecker {
             //resultSentence += "" + tmp1_1 + error + "[" + first + "]" + tmp1_2 + " ";
             SpellingError a= new SpellingError(0,0,""+first);
             listcheck.add(a);
-
+            resultCheckPosition.add("0");
             resultCheck.add(error + " " + second + "," + "<span style='color:red;'>" + error +"</span>" + " " +second);
             error_count++;
         } else {
@@ -2108,7 +2312,7 @@ public class SpellChecker {
             //resultSentence += "" + tmp2_1 + error + "[" + second + "]" + tmp2_2 + " ";
             SpellingError a = new SpellingError(1,1,""+second);
             listcheck.add(a);
-
+            resultCheckPosition.add("1");
             resultCheck.add(first + " " + error + " " + third + "," + first + " " + "<span style='color:red;'>" + error +"</span>" + " " +third);
             error_count++;
         } else {
@@ -2147,7 +2351,7 @@ public class SpellChecker {
                 third.replace(0, third.length(), result);
                 //resultSentence += "" + tmp3_1 + error + "[" + third + "]" + tmp3_2 + " ";
                 SpellingError a= new SpellingError(i-2,i-2,""+third);
-
+                resultCheckPosition.add((i-2) + "");
                 resultCheck.add(second + " " + error + " " + fourth + "," + second + " " + "<span style='color:red;'>" + error +"</span>" + " " +fourth);
                 listcheck.add(a);
             } else {
@@ -2187,7 +2391,7 @@ public class SpellChecker {
             //resultSentence += "" + tmp3_1 + error + "[" + third + "]" + tmp3_2 + " ";
             SpellingError a= new SpellingError(words.length-2,words.length-2,""+third);
             listcheck.add(a);
-
+            resultCheckPosition.add((words.length-2) + "");
             resultCheck.add(second + " " + error + " " + fourth + "," + second + " " + "<span style='color:red;'>" + error +"</span>" + " " +fourth);
             error_count++;
         } else {
@@ -2200,7 +2404,7 @@ public class SpellChecker {
             fourth.replace(0, fourth.length(), result);
             //resultSentence += "" + tmp4_1 + error + "[" + fourth + "]" + tmp4_2 + " ";
             SpellingError a= new SpellingError(words.length-1,words.length-1,""+fourth);
-
+            resultCheckPosition.add((words.length-1) + "");
             resultCheck.add(second + " " + third + " " + error + "," + second + " " + third + "<span style='color:red;'>" + error +"</span>");
             listcheck.add(a);
             error_count++;
@@ -2208,24 +2412,8 @@ public class SpellChecker {
         } else {
             //resultSentence += tmp_str4 + " ";
         }
-//        System.out.println("count: " + count);
-        //System.out.println("error_count: " + error_count);
-       /* ArrayList<Check> list = new ArrayList<>();
-        String ou = "";
-        String[] token = resultSentence.split(" ");
-        for (int i = 0; i < token.length; i++) {
-            if (token[i].indexOf("[") > -1) {
-                Check a = new Check(i, token[i].substring(token[i].indexOf("[")+1, token[i].length()-1));
-//                ou +=token[i]+",";
-                list.add(a);
-            }
-//sonnv.ict@gmail.com
-        }
-        ou = list.toString();
 
-        return ou;*/
-        //return resultSentence.trim();
-        return listcheck;
+        return resultCheckPosition;
     }
 
     public ArrayList<String> processSentence(String sentence) throws Exception {
@@ -2416,6 +2604,218 @@ public class SpellChecker {
         }
         ou = list.toString();
         
+        return ou;*/
+        //return resultSentence.trim();
+        return resultCheck;
+    }
+
+    public ArrayList<Suggest> processParagraph(String sentence) throws Exception {
+
+        String resultSentence = "";
+
+        ArrayList<SpellingError> listcheck = new ArrayList();
+        ArrayList<Suggest> resultCheck = new ArrayList<>();
+
+        int count, error_count;
+        count = 0;
+        error_count = 0;
+//        System.out.println(process("mới", "mua", "dung", "ma", "sao"));
+//        System.out.println(process("mua", "dùng", "ma", "sao", ""));
+
+        String[] words = sentence.split(" ");
+        if (words.length < 5) {
+            //return sentence;
+            return null;
+        }
+
+        StringBuilder tmp1_1, tmp1_2, tmp2_1, tmp2_2, tmp3_1, tmp3_2, tmp4_1, tmp4_2;
+        tmp1_1 = new StringBuilder("");
+        tmp1_2 = new StringBuilder("");
+        tmp2_1 = new StringBuilder("");
+        tmp2_2 = new StringBuilder("");
+        tmp3_1 = new StringBuilder("");
+        tmp3_2 = new StringBuilder("");
+        tmp4_1 = new StringBuilder("");
+        tmp4_2 = new StringBuilder("");
+        String tmp_str1, tmp_str2, tmp_str3, tmp_str4, tmp_str5 = null;
+        tmp_str1 = "";
+        tmp_str2 = "";
+        tmp_str3 = "";
+        tmp_str4 = "";
+//        tmp_str5 = "";
+        //split punctuation from the word
+        StringBuilder first = new StringBuilder(words[0]);
+        tmp_str1 = first.toString();
+        remove_symbol(first, tmp1_1, tmp1_2);
+        StringBuilder second = new StringBuilder(words[1]);
+        tmp_str2 = second.toString();
+        remove_symbol(second, tmp2_1, tmp2_2);
+        symbolMark1 = tmp1_2.length() > 0 || (tmp2_1.length() > 0 && first.charAt(0) != '@');
+        StringBuilder third = new StringBuilder(words[2]);
+        tmp_str3 = third.toString();
+        char c3 = third.charAt(0);
+        remove_symbol(third, tmp3_1, tmp3_2);
+        symbolMark2 = (tmp2_2.length() > 0 || (tmp3_1.length() > 0 && c3 != '@'));
+        StringBuilder fourth = new StringBuilder(words[3]);
+        tmp_str4 = fourth.toString();
+        char c4 = fourth.charAt(0);
+        remove_symbol(fourth, tmp4_1, tmp4_2);
+        symbolMark3 = (tmp3_2.length() > 0 || (tmp4_1.length() > 0 && c4 != '@'));
+        //check the first two words
+        String result = process("", "", first.toString(), second.toString(), third.toString());
+        if (first.toString().toLowerCase().compareTo(result.toLowerCase()) != 0) {
+            String error = first.toString();
+            first.replace(0, first.length(), result);
+            //resultSentence += "" + tmp1_1 + error + "[" + first + "]" + tmp1_2 + " ";
+            SpellingError a= new SpellingError(0,0,""+first);
+            listcheck.add(a);
+
+            Suggest suggest = new Suggest();
+            suggest.setError(error);
+            suggest.setSuggest(new String(first));
+
+            resultCheck.add(suggest);
+
+            error_count++;
+        } else {
+            //resultSentence += tmp_str1 + " ";
+        }
+        result = process("", first.toString(), second.toString(), third.toString(), fourth.toString());
+        if (second.toString().toLowerCase().compareTo(result.toLowerCase()) != 0) {
+            String error = second.toString();
+            second.replace(0, second.length(), result);
+            //resultSentence += "" + tmp2_1 + error + "[" + second + "]" + tmp2_2 + " ";
+            SpellingError a = new SpellingError(1,1,""+second);
+            listcheck.add(a);
+
+            Suggest suggest = new Suggest();
+            suggest.setError(error);
+            suggest.setSuggest(new String(second));
+
+            resultCheck.add(suggest);
+
+            error_count++;
+        } else {
+            //resultSentence += tmp_str2 + " ";
+        }
+        StringBuilder fifth = null;
+        StringBuilder tmp5_1 = null, tmp5_2 = null;
+        for (int i = 4; i < words.length; i++) {
+            fifth = new StringBuilder(words[i]);
+            tmp5_1 = new StringBuilder("");
+            tmp5_2 = new StringBuilder("");
+//                System.out.println("'"+fifth+"'");
+            char c5;
+            if (fifth.length() != 0) {
+                c5 = fifth.charAt(0);
+            } else {
+                c5 = ' ';
+            }
+            tmp_str5 = fifth.toString();
+
+//            System.out.println(first.toString() + " " + second.toString() + " " + third.toString() + " " + fourth.toString() + " " + fifth.toString());
+            remove_symbol(fifth, tmp5_1, tmp5_2);
+            symbolMark4 = (tmp4_2.length() > 0 || (tmp5_1.length() > 0 && c5 != '@'));
+            result = process(first.toString(), second.toString(), third.toString(), fourth.toString(), fifth.toString());
+//                System.out.println(tmp_str3);
+            if (third.toString().toLowerCase().compareTo(result.toLowerCase()) != 0 && c3 == '@') {
+//                    System.out.println(first.toString() + " " + second.toString() + " " + third.toString() + " " + fourth.toString() + " " + fifth.toString() + " : " + result);
+//                    Thread.sleep(50000);
+                System.out.println(third.toString() + " : " + result);
+            }
+            if (third.toString().toLowerCase().compareTo(result.toLowerCase()) != 0) {
+                //if (c3 == '@') {
+                error_count++;
+                // }
+                String error = third.toString();
+                third.replace(0, third.length(), result);
+                //resultSentence += "" + tmp3_1 + error + "[" + third + "]" + tmp3_2 + " ";
+                SpellingError a= new SpellingError(i-2,i-2,""+third);
+
+                Suggest suggest = new Suggest();
+                suggest.setError(error);
+                suggest.setSuggest(new String(third));
+                resultCheck.add(suggest);
+                listcheck.add(a);
+            } else {
+                //resultSentence += tmp_str3 + " ";
+            }
+
+            first = second;
+            second = third;
+            third = fourth;
+            fourth = fifth;
+            tmp_str1 = tmp_str2;
+            tmp_str2 = tmp_str3;
+            tmp_str3 = tmp_str4;
+            tmp_str4 = tmp_str5;
+            tmp1_1 = tmp2_1;
+            tmp2_1 = tmp3_1;
+            tmp3_1 = tmp4_1;
+            tmp4_1 = tmp5_1;
+            tmp1_2 = tmp2_2;
+            tmp2_2 = tmp3_2;
+            tmp3_2 = tmp4_2;
+            tmp4_2 = tmp5_2;
+//                System.out.println("assign tmp4_2 to " + tmp5_2 + "\n");
+            symbolMark1 = symbolMark2;
+            symbolMark2 = symbolMark3;
+            symbolMark3 = symbolMark4;
+            c3 = c4;
+            c4 = c5;
+            count++;
+        }
+//        check last two words
+//        System.out.println("process word " + third);
+        result = process(first.toString(), second.toString(), third.toString(), fourth.toString(), "");
+        if (third.toString().toLowerCase().compareTo(result.toLowerCase()) != 0) {
+            String error = third.toString();
+            third.replace(0, third.length(), result);
+            //resultSentence += "" + tmp3_1 + error + "[" + third + "]" + tmp3_2 + " ";
+            SpellingError a= new SpellingError(words.length-2,words.length-2,""+third);
+            listcheck.add(a);
+
+            Suggest suggest = new Suggest();
+            suggest.setError(error);
+            suggest.setSuggest(new String(third));
+            resultCheck.add(suggest);
+            error_count++;
+        } else {
+            //resultSentence += tmp_str3 + " ";
+        }
+//        System.out.println("process word " + fourth);
+        result = process(second.toString(), third.toString(), fourth.toString(), "", "");
+        if (fourth.toString().toLowerCase().compareTo(result.toLowerCase()) != 0) {
+            String error = fourth.toString();
+            fourth.replace(0, fourth.length(), result);
+            //resultSentence += "" + tmp4_1 + error + "[" + fourth + "]" + tmp4_2 + " ";
+            SpellingError a= new SpellingError(words.length-1,words.length-1,""+fourth);
+
+            Suggest suggest = new Suggest();
+            suggest.setError(error);
+            suggest.setSuggest(new String(fourth));
+            resultCheck.add(suggest);
+            listcheck.add(a);
+            error_count++;
+
+        } else {
+            //resultSentence += tmp_str4 + " ";
+        }
+//        System.out.println("count: " + count);
+        //System.out.println("error_count: " + error_count);
+       /* ArrayList<Check> list = new ArrayList<>();
+        String ou = "";
+        String[] token = resultSentence.split(" ");
+        for (int i = 0; i < token.length; i++) {
+            if (token[i].indexOf("[") > -1) {
+                Check a = new Check(i, token[i].substring(token[i].indexOf("[")+1, token[i].length()-1));
+//                ou +=token[i]+",";
+                list.add(a);
+            }
+//sonnv.ict@gmail.com
+        }
+        ou = list.toString();
+
         return ou;*/
         //return resultSentence.trim();
         return resultCheck;

@@ -1,8 +1,9 @@
 package com.example.dao;
 
 import com.example.model.Customer;
-import org.springframework.data.repository.CrudRepository;
+import com.example.model.Suggest;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,9 @@ public interface CustomerDao {
     Customer getCustommerById(long id);
     Customer getCustomerByLastName(String name);
     void createCustomer(Customer customer);
-    ArrayList<String> spellingCheck(String content);
+    ArrayList spellingCheck(String content);
     String positionMistake(String content);
+    String findMistakePosition(String url);
+    ArrayList typingCheck(String content);
+    ArrayList<Suggest> checkParagraph(String content);
 }

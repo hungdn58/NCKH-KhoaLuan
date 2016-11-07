@@ -1,9 +1,8 @@
 Manifest-Version: 1.0
-Implementation-Title: demo
 Implementation-Version: 0.0.1-SNAPSHOT
 Built-By: root
 Implementation-Vendor-Id: com.example
 Created-By: IntelliJ IDEA
-Build-Jdk: 1.8.0_91
-Main-Class: ${start-class}
+Build-Jdk: 1.8.0_101
+Main-Class: com.example.DemoApplication
 
