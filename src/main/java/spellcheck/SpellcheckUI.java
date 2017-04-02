@@ -33,7 +33,7 @@ public class SpellcheckUI extends javax.swing.JFrame {
     public SpellcheckUI() throws Exception {
         initComponents();
         groupButton();
-        sp = new SpellChecker("D:/ngramdict/");
+        sp = new SpellChecker("E:\\Hoc Tap\\NCKH\\ngramdict\\");
         res = new Restoration();
         Font font = new Font("Verdana", Font.PLAIN, 20);
         this.jTextArea1.setFont(font);

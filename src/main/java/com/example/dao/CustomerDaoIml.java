@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ *
  * Created by root on 19/09/2016.
  */
 @Repository
@@ -54,13 +55,13 @@ public class CustomerDaoIml implements CustomerDao {
     @Override
     public String positionMistake(String content) {
         try {
-            spellChecker = new SpellChecker("/home/hungdn58/Desktop/ngramdict/");
+            spellChecker = new SpellChecker("E:\\Hoc Tap\\NCKH\\ngramdict\\");
         } catch (Exception e) {
             e.printStackTrace();
         }
         // TODO add your handling code here:
         //String inputText = this.jTextArea1.getText();
-        String output = "";
+        String output;
         double runningTime = 0.0;
         if (content.length() > 0) {
             //System.out.println(inputText);
@@ -97,7 +98,7 @@ public class CustomerDaoIml implements CustomerDao {
         //String inputText = this.jTextArea1.getText();
         try {
             if (spellChecker == null) {
-                spellChecker = new SpellChecker("/home/hungdn58/Desktop/ngramdict/");
+                spellChecker = new SpellChecker("E:\\Hoc Tap\\NCKH\\ngramdict\\");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -142,7 +143,7 @@ public class CustomerDaoIml implements CustomerDao {
         ArrayList<Suggest> result = new ArrayList<>();
         try {
             if (spellChecker == null) {
-                spellChecker = new SpellChecker("/home/hungdn58/Desktop/ngramdict/");
+                spellChecker = new SpellChecker("E:\\Hoc Tap\\NCKH\\ngramdict\\");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -185,7 +186,7 @@ public class CustomerDaoIml implements CustomerDao {
 
         try {
             if (spellChecker == null) {
-                spellChecker = new SpellChecker("/home/hungdn58/Desktop/ngramdict/");
+                spellChecker = new SpellChecker("E:\\Hoc Tap\\NCKH\\ngramdict\\");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -232,7 +233,7 @@ public class CustomerDaoIml implements CustomerDao {
 
         try {
             if (spellChecker == null) {
-                spellChecker = new SpellChecker("/home/hungdn58/Desktop/ngramdict/");
+                spellChecker = new SpellChecker("E:\\Hoc Tap\\NCKH\\ngramdict\\");
             }
         } catch (Exception e) {
             e.printStackTrace();

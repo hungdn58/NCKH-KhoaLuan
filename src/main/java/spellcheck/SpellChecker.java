@@ -2673,6 +2673,7 @@ public class SpellChecker {
             Suggest suggest = new Suggest();
             suggest.setError(error);
             suggest.setSuggest(new String(first));
+            suggest.setPosition(0);
 
             resultCheck.add(suggest);
 
@@ -2690,6 +2691,7 @@ public class SpellChecker {
 
             Suggest suggest = new Suggest();
             suggest.setError(error);
+            suggest.setPosition(1);
             suggest.setSuggest(new String(second));
 
             resultCheck.add(suggest);
@@ -2734,6 +2736,7 @@ public class SpellChecker {
 
                 Suggest suggest = new Suggest();
                 suggest.setError(error);
+                suggest.setPosition(i-2);
                 suggest.setSuggest(new String(third));
                 resultCheck.add(suggest);
                 listcheck.add(a);
@@ -2777,6 +2780,7 @@ public class SpellChecker {
 
             Suggest suggest = new Suggest();
             suggest.setError(error);
+            suggest.setPosition(words.length - 2);
             suggest.setSuggest(new String(third));
             resultCheck.add(suggest);
             error_count++;
@@ -2793,6 +2797,7 @@ public class SpellChecker {
 
             Suggest suggest = new Suggest();
             suggest.setError(error);
+            suggest.setPosition(words.length - 1);
             suggest.setSuggest(new String(fourth));
             resultCheck.add(suggest);
             listcheck.add(a);
